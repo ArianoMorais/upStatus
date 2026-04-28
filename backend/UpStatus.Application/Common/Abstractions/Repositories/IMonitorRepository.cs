@@ -9,6 +9,8 @@ public interface IMonitorRepository
 
     Task<IReadOnlyList<Monitor>> ListAsync(CancellationToken ct);
 
+    Task<bool> ExistsByUrlAsync(string url, Guid? ignoreId, CancellationToken ct);
+
     Task AddAsync(Monitor monitor, CancellationToken ct);
 
     Task UpdateAsync(Monitor monitor, CancellationToken ct);
