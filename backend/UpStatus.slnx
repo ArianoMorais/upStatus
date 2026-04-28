@@ -3,6 +3,7 @@
     <Build />
   </Project>
   <Project Path="UpStatus.Api/UpStatus.Api.csproj" />
+  <Project Path="UpStatus.Api.Contracts/UpStatus.Api.Contracts.csproj" />
   <Project Path="UpStatus.Application/UpStatus.Application.csproj" />
   <Project Path="UpStatus.Domain/UpStatus.Domain.csproj" />
   <Project Path="UpStatus.Infrastructure/UpStatus.Infrastructure.csproj" />
