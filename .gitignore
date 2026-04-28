@@ -39,6 +39,16 @@ ScaffoldingReadMe.txt
 # dotenv environment variables file
 .env
 
+# Visual Studio / Rider / VS Code IDE caches
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Claude Code
+.claude
+
 # Others
 ~$*
 *~

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>{8A0B6E6C-4D12-4B7F-9E1A-2C3D4E5F6789}</ProjectGuid>
+    <DockerLaunchBrowser>True</DockerLaunchBrowser>
+    <DockerServiceUrl>http://localhost:5000/swagger</DockerServiceUrl>
+    <DockerServiceName>api</DockerServiceName>
+    <DockerComposeProjectName>upstatus</DockerComposeProjectName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="docker-compose.yml" />
+    <None Include="backend/.dockerignore" />
+    <None Include="backend/Dockerfile" />
+  </ItemGroup>
+</Project>

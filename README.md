@@ -1,22 +1,38 @@
-# UpStatus — Backend
+# UpStatus
 
-Backend do **UpStatus**, dashboard de monitoramento ativo de URLs/APIs com atualização em tempo real, histórico, incidentes e métricas de uptime.
+Dashboard de monitoramento ativo de URLs/APIs com atualização em tempo real, histórico, incidentes e métricas de uptime.
+
+## Estrutura do monorepo
+
+```
+upStatus/
+├── backend/    # API .NET 8 (FastEndpoints + MongoDB + Redis + SignalR)
+├── frontend/   # Vue 3 + Vite + TypeScript
+└── docker-compose.yml
+```
 
 ## Stack
 
-- **.NET 8** + **FastEndpoints** (CQRS via command bus nativo)
-- **MongoDB 7** 
+### Backend
+- **.NET 8** + **FastEndpoints**
+- **MongoDB 7**
 - **Redis 7**
 - **SignalR**
 - **JWT** + **BCrypt**
+
+### Frontend (planejado)
+- **Vue 3** + **Vite** + **TypeScript**
+
+### Infra
 - **Docker** + **docker-compose**
 
-## Arquitetura
+## Como rodar
 
-Clean Architecture com 4 projetos:
+```bash
+# Subir tudo (Mongo + Redis + API)
+docker compose up --build
 
-UpStatus.Domain         
-UpStatus.Application    
-UpStatus.Infrastructure 
-UpStatus.Api
+# Health check
+curl http://localhost:5000/health
+```
 
