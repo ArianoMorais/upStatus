@@ -17,7 +17,23 @@ public sealed class MonitorRepository : IMonitorRepository
         _context.Monitors.Find(m => m.Id == id).FirstOrDefaultAsync(ct)!;
 
     public async Task<IReadOnlyList<DomainMonitor>> ListAsync(CancellationToken ct) =>
-        await _context.Monitors.Find(FilterDefinition<DomainMonitor>.Empty).ToListAsync(ct);
+        await _context.Monitors
+            .Find(FilterDefinition<DomainMonitor>.Empty)
+            .SortByDescending(m => m.CreatedAt)
+            .ToListAsync(ct);
+
+    public async Task<bool> ExistsByUrlAsync(string url, Guid? ignoreId, CancellationToken ct)
+    {
+        var filter = Builders<DomainMonitor>.Filter.Eq(m => m.Url, url);
+
+        if (ignoreId.HasValue)
+        {
+            filter &= Builders<DomainMonitor>.Filter.Ne(m => m.Id, ignoreId.Value);
+        }
+
+        var count = await _context.Monitors.CountDocumentsAsync(filter, cancellationToken: ct);
+        return count > 0;
+    }
 
     public Task AddAsync(DomainMonitor monitor, CancellationToken ct) =>
         _context.Monitors.InsertOneAsync(monitor, cancellationToken: ct);
