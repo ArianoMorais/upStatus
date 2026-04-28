@@ -2,9 +2,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UpStatus.Domain\UpStatus.Domain.csproj" />
+    <ProjectReference Include="..\UpStatus.Api.Contracts\UpStatus.Api.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="8.1.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
   </ItemGroup>
 

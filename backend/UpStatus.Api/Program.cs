@@ -1,8 +1,12 @@
 using DotNetEnv;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using UpStatus.Api.Configuration;
+using UpStatus.Api.Middleware;
+using UpStatus.Api.Seed;
 using UpStatus.Application;
 using UpStatus.Infrastructure;
+using UpStatus.Infrastructure.Persistence;
 
 Env.TraversePath().Load();
 
@@ -17,6 +21,7 @@ var allowedOrigins = builder.Configuration
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
+    .AddJwtAuth(builder.Configuration)
     .AddFastEndpoints()
     .SwaggerDocument(o =>
     {
@@ -26,6 +31,8 @@ builder.Services
             s.Version = "v1";
         };
     });
+
+builder.Services.AddScoped<AdminUserSeeder>();
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 {
@@ -39,7 +46,19 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 
 var app = builder.Build();
 
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var indexes = scope.ServiceProvider.GetRequiredService<MongoIndexInitializer>();
+    await indexes.EnsureIndexesAsync(CancellationToken.None);
+
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminUserSeeder>();
+    await seeder.RunAsync(CancellationToken.None);
+}
+
+app.UseMiddleware<BusinessExceptionMiddleware>();
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseFastEndpoints(c => c.Errors.UseProblemDetails());
 app.UseSwaggerGen();
 
