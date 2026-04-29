@@ -2,6 +2,7 @@ using DotNetEnv;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using UpStatus.Api.Configuration;
+using UpStatus.Api.Hubs;
 using UpStatus.Api.Middleware;
 using UpStatus.Api.Seed;
 using UpStatus.Application;
@@ -22,6 +23,7 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddJwtAuth(builder.Configuration)
+    .AddRealtime(builder.Configuration)
     .AddFastEndpoints()
     .SwaggerDocument(o =>
     {
@@ -61,5 +63,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseFastEndpoints(c => c.Errors.UseProblemDetails());
 app.UseSwaggerGen();
+app.MapHub<MonitoringHub>(MonitoringHub.Path);
 
 app.Run();
