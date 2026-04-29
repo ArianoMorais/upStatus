@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Microsoft.Extensions.Options;
+using UpStatus.Api.Contracts.Responses.Incidents;
 using UpStatus.Application.Common.Abstractions;
 using UpStatus.Application.Common.Abstractions.Repositories;
 using UpStatus.Application.Common.Caching;
@@ -17,17 +18,23 @@ public sealed class ThresholdIncidentTrigger : IIncidentTrigger
     private readonly IIncidentRepository _incidents;
     private readonly ICacheService _cache;
     private readonly WorkerOptions _workerOptions;
+    private readonly ICommandHandler<OpenIncidentCommand, IncidentResponse> _openHandler;
+    private readonly ICommandHandler<ResolveIncidentCommand, IncidentResponse> _resolveHandler;
 
     public ThresholdIncidentTrigger(
         ICheckRepository checks,
         IIncidentRepository incidents,
         ICacheService cache,
-        IOptions<WorkerOptions> workerOptions)
+        IOptions<WorkerOptions> workerOptions,
+        ICommandHandler<OpenIncidentCommand, IncidentResponse> openHandler,
+        ICommandHandler<ResolveIncidentCommand, IncidentResponse> resolveHandler)
     {
         _checks = checks;
         _incidents = incidents;
         _cache = cache;
         _workerOptions = workerOptions.Value;
+        _openHandler = openHandler;
+        _resolveHandler = resolveHandler;
     }
 
     public async Task EvaluateAsync(DomainMonitor monitor, Check check, CancellationToken ct)
@@ -71,7 +78,7 @@ public sealed class ThresholdIncidentTrigger : IIncidentTrigger
             var reason = check.ErrorMessage
                 ?? (check.StatusCode.HasValue ? $"Status code {check.StatusCode.Value}." : "Falhas consecutivas detectadas.");
 
-            await new OpenIncidentCommand(monitor.Id, reason).ExecuteAsync(ct);
+            await _openHandler.ExecuteAsync(new OpenIncidentCommand(monitor.Id, reason), ct);
 
             await _cache.SetAsync(
                 cooldownKey,
@@ -92,7 +99,7 @@ public sealed class ThresholdIncidentTrigger : IIncidentTrigger
 
         if (allRecovered)
         {
-            await new ResolveIncidentCommand(open.Id, userId: null, userName: null, comment: null).ExecuteAsync(ct);
+            await _resolveHandler.ExecuteAsync(new ResolveIncidentCommand(open.Id, userId: null, userName: null, comment: null), ct);
             await _cache.RemoveAsync(IncidentCacheKeys.Cooldown(monitor.Id), ct);
         }
     }

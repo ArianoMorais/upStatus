@@ -1,4 +1,4 @@
-# UpStatus — Backend
+# UpStatus - Backend
 
 Backend do **UpStatus**, dashboard de monitoramento ativo de URLs/APIs.
 
