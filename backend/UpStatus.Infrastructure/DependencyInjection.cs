@@ -6,10 +6,13 @@ using UpStatus.Application.Common.Abstractions;
 using UpStatus.Application.Common.Abstractions.Repositories;
 using UpStatus.Infrastructure.Auth;
 using UpStatus.Infrastructure.Caching;
+using UpStatus.Infrastructure.Http;
+using UpStatus.Infrastructure.Incidents;
 using UpStatus.Infrastructure.Persistence;
 using UpStatus.Infrastructure.Persistence.Mappings;
 using UpStatus.Infrastructure.Persistence.Repositories;
 using UpStatus.Infrastructure.Time;
+using UpStatus.Infrastructure.Workers;
 
 namespace UpStatus.Infrastructure;
 
@@ -22,6 +25,7 @@ public static class DependencyInjection
         services.Configure<MongoOptions>(configuration.GetSection("Mongo"));
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.Configure<RedisOptions>(configuration.GetSection("Redis"));
+        services.Configure<WorkerOptions>(configuration.GetSection("Worker"));
 
         services.AddSingleton<MongoContext>();
         services.AddSingleton<MongoIndexInitializer>();
@@ -41,6 +45,17 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
+        services.AddScoped<IIncidentTrigger, ThresholdIncidentTrigger>();
+        services.AddSingleton<IHubNotifier, NullHubNotifier>();
+
+        services.AddHttpClient(HttpProbeClient.HttpClientName, client =>
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("UpStatus-Probe/1.0");
+        });
+        services.AddSingleton<IHttpProbeClient, HttpProbeClient>();
+
+        services.AddScoped<HealthCheckExecutor>();
+        services.AddHostedService<HealthCheckScheduler>();
 
         return services;
     }

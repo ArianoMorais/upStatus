@@ -19,4 +19,9 @@ public static class CurrentUserAccessor
 
         return userId;
     }
+
+    public static string? GetUserName(ClaimsPrincipal principal) =>
+        principal.FindFirstValue("name")
+        ?? principal.FindFirstValue(ClaimTypes.Name)
+        ?? principal.FindFirstValue(ClaimTypes.Email);
 }
