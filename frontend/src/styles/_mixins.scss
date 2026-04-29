@@ -1,0 +1,19 @@
+@use 'variables' as *;
+
+@mixin md-down {
+  @media (max-width: #{$bp-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin md-up {
+  @media (min-width: $bp-md) {
+    @content;
+  }
+}
+
+@mixin lg-up {
+  @media (min-width: $bp-lg) {
+    @content;
+  }
+}

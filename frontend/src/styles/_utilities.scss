@@ -1,0 +1,41 @@
+@use 'variables' as *;
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.row-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-sm;
+}
+
+.gap-sm { gap: $space-sm; }
+.gap-md { gap: $space-md; }
+.gap-lg { gap: $space-lg; }
+
+.text-muted {
+  color: $color-text-muted;
+}
+
+.text-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.flex-1 {
+  flex: 1;
+}
